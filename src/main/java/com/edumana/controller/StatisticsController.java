@@ -1,22 +1,5 @@
 package com.edumana.controller;
 
-import com.edumana.service.TeacherService;
-import com.edumana.service.TeachingPaymentService;
-import com.edumana.service.DepartmentService;
-import com.edumana.service.DegreeService;
-import com.edumana.service.CourseService;
-import com.edumana.service.CourseClassService;
-import com.edumana.dto.TeacherStatistics;
-import com.edumana.model.Course;
-import com.edumana.dto.CourseStatistics;
-import com.edumana.dto.TeachingPaymentYearlyReport;
-import com.edumana.model.Department;
-import com.edumana.model.Teacher;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -24,7 +7,25 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.edumana.dto.CourseStatistics;
+import com.edumana.dto.TeachingPaymentYearlyReport;
+import com.edumana.model.Course;
+import com.edumana.model.Department;
+import com.edumana.model.Teacher;
+import com.edumana.service.CourseClassService;
+import com.edumana.service.CourseService;
+import com.edumana.service.DegreeService;
+import com.edumana.service.DepartmentService;
+import com.edumana.service.TeacherService;
+import com.edumana.service.TeachingPaymentService;
 
 @Controller
 @RequestMapping("/statistics")

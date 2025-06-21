@@ -1,18 +1,19 @@
 package com.edumana.service;
 
-import com.edumana.model.Teacher;
-import com.edumana.model.Department;
-import com.edumana.model.Degree;
-import com.edumana.repository.TeacherRepository;
-import com.edumana.dto.TeacherStatistics;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
-import java.util.Optional;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.stream.Collectors;
+
+import com.edumana.model.Degree;
+import com.edumana.model.Department;
+import com.edumana.model.Teacher;
+import com.edumana.repository.TeacherRepository;
 
 @Service
 public class TeacherService {
