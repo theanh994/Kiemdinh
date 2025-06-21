@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::title}, ~{::main})}"
+>
+  <head>
+    <title>Báo cáo tiền dạy theo năm</title>
+  </head>
+  <body>
+    <main>
+      <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2>Báo cáo tiền dạy theo giáo viên</h2>
+          <div>
+            <a
+              th:href="@{/statistics/teaching-payments/department}"
+              class="btn btn-outline-primary me-2"
+            >
+              <i class="bi bi-building"></i> Xem theo khoa
+            </a>
+            <a
+              th:href="@{/statistics/teaching-payments/school}"
+              class="btn btn-outline-primary"
+            >
+              <i class="bi bi-globe"></i> Xem toàn trường
+            </a>
+          </div>
+        </div>
+
+        <!-- Form for selecting year and teacher -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <form
+              th:action="@{/statistics/teaching-payments}"
+              method="get"
+              class="row g-3"
+            >
+              <div class="col-md-5">
+                <label for="teacherId" class="form-label">Giáo viên</label>
+                <select class="form-select" id="teacherId" name="teacherId">
+                  <option value="">-- Chọn giáo viên --</option>
+                  <option
+                    th:each="teacher : ${teachers}"
+                    th:value="${teacher.id}"
+                    th:selected="${teacher.id == selectedTeacherId}"
+                    th:text="${teacher.name} + ' - ' + ${teacher.department.name}"
+                  ></option>
+                </select>
+              </div>
+              <div class="col-md-5">
+                <label for="year" class="form-label">Năm</label>
+                <select class="form-select" id="year" name="year">
+                  <option
+                    th:each="y : ${years}"
+                    th:value="${y}"
+                    th:selected="${y == selectedYear}"
+                    th:text="${y}"
+                  ></option>
+                </select>
+              </div>
+              <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                  Xem báo cáo
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Report details -->
+        <div th:if="${report != null}">
+          <div class="card mb-4">
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <p class="mb-1"><strong>Giáo viên:</strong></p>
+                  <p class="h5" th:text="${report.teacherName}"></p>
+                </div>
+                <div class="col-md-4">
+                  <p class="mb-1"><strong>Bằng cấp:</strong></p>
+                  <p class="h5" th:text="${report.teacherDegree}"></p>
+                </div>
+                <div class="col-md-4">
+                  <p class="mb-1"><strong>Khoa:</strong></p>
+                  <p class="h5" th:text="${report.department}"></p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <p class="mb-1"><strong>Năm:</strong></p>
+                  <p class="h5" th:text="${report.year}"></p>
+                </div>
+                <div class="col-md-4">
+                  <p class="mb-1"><strong>Hệ số bằng cấp:</strong></p>
+                  <p
+                    class="h5"
+                    th:text="${#numbers.formatDecimal(report.teacherCoefficient, 1, 2)}"
+                  ></p>
+                </div>
+                <div class="col-md-4">
+                  <p class="mb-1"><strong>Tổng tiền dạy:</strong></p>
+                  <p
+                    class="h4 text-primary"
+                    th:text="${#numbers.formatDecimal(report.totalYearlyPayment, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"
+                  ></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Semester breakdown table -->
+          <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+              <thead class="table-light">
+                <tr>
+                  <th>Kỳ học</th>
+                  <th class="text-center">Số lớp</th>
+                  <th class="text-center">Tổng số tiết</th>
+                  <th class="text-end">Thành tiền</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="semester : ${report.semesterPayments}">
+                  <td th:text="${semester.semesterName}"></td>
+                  <td
+                    class="text-center"
+                    th:text="${semester.totalClasses}"
+                  ></td>
+                  <td
+                    class="text-center"
+                    th:text="${semester.totalPeriods}"
+                  ></td>
+                  <td
+                    class="text-end"
+                    th:text="${#numbers.formatDecimal(semester.totalPayment, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"
+                  ></td>
+                </tr>
+              </tbody>
+              <tfoot class="table-light">
+                <tr>
+                  <td colspan="3" class="text-end">
+                    <strong>Tổng cộng:</strong>
+                  </td>
+                  <td class="text-end">
+                    <strong
+                      th:text="${#numbers.formatDecimal(report.totalYearlyPayment, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"
+                    ></strong>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

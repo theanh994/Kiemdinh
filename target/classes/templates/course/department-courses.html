@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::title}, ~{::main})}"
+>
+  <head>
+    <title>Quản lý học phần khoa</title>
+  </head>
+  <body>
+    <main>
+      <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2>Danh sách học phần khoa quản lý</h2>
+          <a th:href="@{/course/add}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Thêm học phần
+          </a>
+        </div>
+
+        <!-- Department Filter -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <form
+              th:action="@{/course/department}"
+              method="get"
+              class="row g-3"
+            >
+              <div class="col-md-4">
+                <label for="departmentId" class="form-label">Chọn khoa</label>
+                <select
+                  class="form-select"
+                  id="departmentId"
+                  name="departmentId"
+                  onchange="this.form.submit()"
+                >
+                  <option value="all">Tất cả khoa</option>
+                  <option
+                    th:each="dept : ${departments}"
+                    th:value="${dept.id}"
+                    th:text="${dept.name}"
+                    th:selected="${dept.id == selectedDepartmentId}"
+                  ></option>
+                </select>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div
+          th:if="${message}"
+          class="alert alert-success alert-dismissible fade show"
+          role="alert"
+        >
+          [[${message}]]
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+          ></button>
+        </div>
+
+        <!-- Courses Table -->
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Mã học phần</th>
+                    <th>Tên học phần</th>
+                    <th>Số tín chỉ</th>
+                    <th>Khoa quản lý</th>
+                    <th>Số lớp mở</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Recently Added Courses -->
+                  <tr th:each="course : ${recentCourses}" class="table-info">
+                    <td>
+                      <span class="badge bg-success me-1">Mới</span>
+                      <a
+                        th:href="@{/course/classes/{id}(id=${course.id})}"
+                        th:text="${course.courseCode}"
+                        class="text-decoration-none"
+                      ></a>
+                    </td>
+                    <td th:text="${course.name}"></td>
+                    <td th:text="${course.credits}"></td>
+                    <td th:text="${course.department?.name}"></td>
+                    <td>
+                      <span
+                        th:with="stats=${courseStats.get(course.id)}"
+                        class="d-inline-flex align-items-center gap-2"
+                      >
+                        <span
+                          th:text="${stats?.get('totalClasses')} ?: 0"
+                        ></span>
+                        lớp
+                        <small
+                          class="text-muted"
+                          th:if="${stats != null and stats.containsKey('totalStudents')}"
+                        >
+                          (<span th:text="${stats.get('totalStudents')}"></span>
+                          sinh viên)
+                        </small>
+                      </span>
+                    </td>
+                    <td>
+                      <div class="btn-group btn-group-sm">
+                        <a
+                          th:href="@{/course/classes/{id}(id=${course.id})}"
+                          class="btn btn-outline-primary"
+                          title="Xem danh sách lớp"
+                        >
+                          <i class="bi bi-list-ul"></i>
+                        </a>
+                        <a
+                          th:href="@{/course/edit/{id}(id=${course.id})}"
+                          class="btn btn-outline-secondary"
+                          title="Sửa"
+                        >
+                          <i class="bi bi-pencil"></i>
+                        </a>
+                        <a
+                          th:href="@{/course/delete/{id}(id=${course.id})}"
+                          class="btn btn-outline-danger"
+                          title="Xóa"
+                          onclick="return confirm('Bạn có chắc chắn muốn xóa học phần này?')"
+                        >
+                          <i class="bi bi-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Other Courses -->
+                  <tr th:each="course : ${courses}">
+                    <td>
+                      <a
+                        th:href="@{/course/classes/{id}(id=${course.id})}"
+                        th:text="${course.courseCode}"
+                        class="text-decoration-none"
+                      ></a>
+                    </td>
+                    <td th:text="${course.name}"></td>
+                    <td th:text="${course.credits}"></td>
+                    <td th:text="${course.department?.name}"></td>
+                    <td>
+                      <span
+                        th:with="stats=${courseStats.get(course.id)}"
+                        class="d-inline-flex align-items-center gap-2"
+                      >
+                        <span
+                          th:text="${stats?.get('totalClasses')} ?: 0"
+                        ></span>
+                        lớp
+                        <small
+                          class="text-muted"
+                          th:if="${stats != null and stats.containsKey('totalStudents')}"
+                        >
+                          (<span th:text="${stats.get('totalStudents')}"></span>
+                          sinh viên)
+                        </small>
+                      </span>
+                    </td>
+                    <td>
+                      <div class="btn-group btn-group-sm">
+                        <a
+                          th:href="@{/course/classes/{id}(id=${course.id})}"
+                          class="btn btn-outline-primary"
+                          title="Xem danh sách lớp"
+                        >
+                          <i class="bi bi-list-ul"></i>
+                        </a>
+                        <a
+                          th:href="@{/course/edit/{id}(id=${course.id})}"
+                          class="btn btn-outline-secondary"
+                          title="Sửa"
+                        >
+                          <i class="bi bi-pencil"></i>
+                        </a>
+                        <a
+                          th:href="@{/course/delete/{id}(id=${course.id})}"
+                          class="btn btn-outline-danger"
+                          title="Xóa"
+                          onclick="return confirm('Bạn có chắc chắn muốn xóa học phần này?')"
+                        >
+                          <i class="bi bi-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

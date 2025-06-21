@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::title}, ~{::main})}"
+>
+  <head>
+    <title>Báo cáo tiền dạy toàn trường</title>
+  </head>
+  <body>
+    <main>
+      <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2>Báo cáo tiền dạy toàn trường</h2>
+          <div>
+            <a
+              th:href="@{/statistics/teaching-payments}"
+              class="btn btn-outline-primary me-2"
+            >
+              <i class="bi bi-person"></i> Xem theo giáo viên
+            </a>
+            <a
+              th:href="@{/statistics/teaching-payments/department}"
+              class="btn btn-outline-primary"
+            >
+              <i class="bi bi-building"></i> Xem theo khoa
+            </a>
+          </div>
+        </div>
+
+        <!-- Form for selecting year -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <form
+              th:action="@{/statistics/teaching-payments/school}"
+              method="get"
+              class="row g-3"
+            >
+              <div class="col-md-10">
+                <label for="year" class="form-label">Năm học</label>
+                <select class="form-select" id="year" name="year">
+                  <option
+                    th:each="y : ${years}"
+                    th:value="${y}"
+                    th:selected="${y == selectedYear}"
+                    th:text="${y}"
+                  ></option>
+                </select>
+              </div>
+              <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                  Xem báo cáo
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- School summary -->
+        <div class="card mb-4">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Tổng kết toàn trường năm [[${selectedYear}]]</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3 mb-3">
+                <div class="card h-100 border-primary">
+                  <div class="card-body text-center">
+                    <h6 class="card-title text-muted mb-2">
+                      Giáo viên giảng dạy
+                    </h6>
+                    <p
+                      class="h3 mb-0 text-primary"
+                      th:text="${schoolTotalTeachers}"
+                    ></p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <div class="card h-100 border-success">
+                  <div class="card-body text-center">
+                    <h6 class="card-title text-muted mb-2">Tổng số lớp</h6>
+                    <p
+                      class="h3 mb-0 text-success"
+                      th:text="${schoolTotalClasses}"
+                    ></p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <div class="card h-100 border-info">
+                  <div class="card-body text-center">
+                    <h6 class="card-title text-muted mb-2">Tổng số tiết</h6>
+                    <p
+                      class="h3 mb-0 text-info"
+                      th:text="${schoolTotalPeriods}"
+                    ></p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <div class="card h-100 border-warning">
+                  <div class="card-body text-center">
+                    <h6 class="card-title text-muted mb-2">Tổng tiền dạy</h6>
+                    <p
+                      class="h3 mb-0 text-warning"
+                      th:text="${#numbers.formatDecimal(schoolTotalPayment, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"
+                    ></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Department reports -->
+        <div th:if="${departmentReports != null and !departmentReports.empty}">
+          <div th:each="entry : ${departmentReports}" class="card mb-4">
+            <div class="card-header bg-light">
+              <h5 class="mb-0" th:text="${entry.key.name}"></h5>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Giáo viên</th>
+                      <th>Bằng cấp</th>
+                      <th class="text-center">Hệ số</th>
+                      <th class="text-center">Số lớp</th>
+                      <th class="text-center">Số tiết</th>
+                      <th class="text-end">Tiền dạy</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:each="report : ${entry.value}">
+                      <td th:text="${report.teacherName}"></td>
+                      <td th:text="${report.teacherDegree}"></td>
+                      <td
+                        class="text-center"
+                        th:text="${#numbers.formatDecimal(report.teacherCoefficient, 1, 2)}"
+                      ></td>
+                      <td
+                        class="text-center"
+                        th:text="${#aggregates.sum(report.semesterPayments.![totalClasses])}"
+                      ></td>
+                      <td
+                        class="text-center"
+                        th:text="${#aggregates.sum(report.semesterPayments.![totalPeriods])}"
+                      ></td>
+                      <td
+                        class="text-end"
+                        th:text="${#numbers.formatDecimal(report.totalYearlyPayment, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"
+                      ></td>
+                    </tr>
+                  </tbody>
+                  <tfoot class="table-light">
+                    <tr>
+                      <td colspan="3" class="text-end">
+                        <strong>Tổng cộng khoa:</strong>
+                      </td>
+                      <td class="text-center">
+                        <strong
+                          th:text="${#aggregates.sum(entry.value.![#aggregates.sum(semesterPayments.![totalClasses])])}"
+                        ></strong>
+                      </td>
+                      <td class="text-center">
+                        <strong
+                          th:text="${#aggregates.sum(entry.value.![#aggregates.sum(semesterPayments.![totalPeriods])])}"
+                        ></strong>
+                      </td>
+                      <td class="text-end">
+                        <strong
+                          th:text="${#numbers.formatDecimal(#aggregates.sum(entry.value.![totalYearlyPayment]), 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"
+                        ></strong>
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- No data message -->
+        <div
+          th:if="${departmentReports == null or departmentReports.empty}"
+          class="alert alert-info"
+        >
+          Không có dữ liệu giảng dạy trong năm được chọn.
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+  <head>
+    <title>Danh sách Học phần</title>
+  </head>
+  <body>
+    <main>
+      <div class="container">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title mb-4">Danh sách Học phần</h2>
+
+            <div
+              th:if="${message}"
+              class="alert"
+              th:classappend="${messageType == 'success'} ? 'alert-success' : 'alert-danger'"
+            >
+              <span th:text="${message}"></span>
+            </div>
+
+            <div class="mb-3">
+              <a th:href="@{/courses/new}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Thêm mới
+              </a>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-striped table-hover">
+                <thead class="table-primary">
+                  <tr>
+                    <th>STT</th>
+                    <th>Mã học phần</th>
+                    <th>Tên học phần</th>
+                    <th>Số tiết</th>
+                    <th>Hệ số</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:each="course, stat : ${courses}">
+                    <td th:text="${stat.count}">1</td>
+                    <td th:text="${course.courseCode}">HP001</td>
+                    <td th:text="${course.name}">Lập trình Java</td>
+                    <td th:text="${course.periods}">45</td>
+                    <td
+                      th:text="${#numbers.formatDecimal(course.coefficient, 1, 2)}"
+                    >
+                      1.00
+                    </td>
+                    <td>
+                      <div class="btn-group" role="group">
+                        <a
+                          th:href="@{/courses/edit/{id}(id=${course.id})}"
+                          class="btn btn-sm btn-outline-primary me-1"
+                        >
+                          <i class="bi bi-pencil"></i>
+                        </a>
+                        <a
+                          href="#"
+                          th:onclick="'if(confirm(\'Bạn có chắc chắn muốn xóa học phần này?\')) { window.location.href=\'' + @{/courses/delete/{id}(id=${course.id})} + '\'; }'"
+                          class="btn btn-sm btn-danger"
+                        >
+                          <i class="bi bi-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div th:replace="~{layout :: scripts}"></div>
+  </body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::main})}">
+  <head>
+    <title th:text="${department.id != null ? 'Cập nhật Khoa' : 'Thêm mới Khoa'}">
+      Thêm mới Khoa
+    </title>
+  </head>
+  <body>
+    <main>
+      <div class="container">
+        <div class="card">
+          <div class="card-body">
+            <h2
+              class="card-title mb-4"
+              th:text="${department.id != null ? 'Cập nhật Khoa' : 'Thêm mới Khoa'}"
+            >
+              Thêm mới Khoa
+            </h2>
+
+            <div
+              th:if="${message}"
+              class="alert"
+              th:classappend="${messageType == 'success'} ? 'alert-success' : 'alert-danger'"
+            >
+              <span th:text="${message}"></span>
+            </div>
+
+            <form
+              th:action="@{${department.id != null ? '/departments/update/' + department.id : '/departments/save'}}"
+              th:object="${department}"
+              method="post"
+            >
+              <div class="mb-3">
+                <label for="fullName" class="form-label"
+                  >Tên Khoa <span class="text-danger">*</span></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="fullName"
+                  th:field="*{fullName}"
+                  required
+                />
+              </div>
+
+              <div class="mb-3">
+                <label for="abbreviation" class="form-label"
+                  >Tên viết tắt <span class="text-danger">*</span></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="abbreviation"
+                  th:field="*{abbreviation}"
+                  required
+                />
+              </div>
+
+              <div class="mb-3">
+                <label for="description" class="form-label"
+                  >Mô tả nhiệm vụ <span class="text-danger">*</span></label
+                >
+                <textarea
+                  class="form-control"
+                  id="description"
+                  th:field="*{description}"
+                  rows="3"
+                  required
+                ></textarea>
+              </div>
+
+              <div class="d-flex justify-content-end gap-2">
+                <a th:href="@{/departments}" class="btn btn-secondary">
+                  <i class="bi bi-x-circle me-2"></i>Hủy
+                </a>
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-check-circle me-2"></i>
+                  <span
+                    th:text="${department.id != null ? 'Cập nhật' : 'Lưu'}"
+                  ></span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div th:replace="~{layout :: scripts}"></div>
+  </body>
+</html>

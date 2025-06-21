@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::title}, ~{::main})}"
+>
+  <head>
+    <title
+      th:text="${classCoefficient.id == null ? 'Thêm hệ số lớp mới' : 'Cập nhật hệ số lớp'}"
+    ></title>
+  </head>
+  <body>
+    <main>
+      <div class="container my-4">
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <div class="card">
+              <div class="card-header">
+                <h3
+                  class="card-title mb-0"
+                  th:text="${classCoefficient.id == null ? 'Thêm hệ số lớp mới' : 'Cập nhật hệ số lớp'}"
+                ></h3>
+              </div>
+              <div class="card-body">
+                <form
+                  th:action="@{/class-coefficients/save}"
+                  th:object="${classCoefficient}"
+                  method="post"
+                >
+                  <input type="hidden" th:field="*{id}" />
+
+                  <!-- Số sinh viên tối thiểu -->
+                  <div class="mb-3">
+                    <label for="minStudents" class="form-label">
+                      Số sinh viên tối thiểu <span class="text-danger">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="minStudents"
+                      th:field="*{minStudents}"
+                      required
+                      min="0"
+                      placeholder="Nhập số sinh viên tối thiểu"
+                    />
+                    <div
+                      class="text-danger"
+                      th:if="${#fields.hasErrors('minStudents')}"
+                      th:errors="*{minStudents}"
+                    ></div>
+                  </div>
+
+                  <!-- Số sinh viên tối đa -->
+                  <div class="mb-3">
+                    <label for="maxStudents" class="form-label">
+                      Số sinh viên tối đa <span class="text-danger">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="maxStudents"
+                      th:field="*{maxStudents}"
+                      required
+                      min="1"
+                      placeholder="Nhập số sinh viên tối đa"
+                    />
+                    <div
+                      class="text-danger"
+                      th:if="${#fields.hasErrors('maxStudents')}"
+                      th:errors="*{maxStudents}"
+                    ></div>
+                  </div>
+
+                  <!-- Hệ số -->
+                  <div class="mb-3">
+                    <label for="coefficient" class="form-label">
+                      Hệ số <span class="text-danger">*</span>
+                    </label>
+                    <div class="row">
+                      <div class="col">
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="coefficient"
+                          th:field="*{coefficient}"
+                          required
+                          step="0.1"
+                          min="-0.5"
+                          max="0.5"
+                          placeholder="Nhập hệ số"
+                        />
+                      </div>
+                      <div class="col-auto">
+                        <div class="btn-group" role="group">
+                          <button
+                            type="button"
+                            class="btn btn-outline-secondary coefficient-btn"
+                            th:each="coef : ${sampleCoefficients}"
+                            th:text="${coef}"
+                            th:onclick="'document.getElementById(\'coefficient\').value=\'' + ${coef} + '\''"
+                          ></button>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="text-danger"
+                      th:if="${#fields.hasErrors('coefficient')}"
+                      th:errors="*{coefficient}"
+                    ></div>
+                  </div>
+
+                  <!-- Mô tả -->
+                  <div class="mb-3">
+                    <label for="description" class="form-label">Mô tả</label>
+                    <textarea
+                      class="form-control"
+                      id="description"
+                      th:field="*{description}"
+                      rows="2"
+                      placeholder="Nhập mô tả cho hệ số lớp"
+                    >
+                    </textarea>
+                  </div>
+
+                  <!-- Trạng thái -->
+                  <div class="mb-3">
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="active"
+                        th:field="*{active}"
+                      />
+                      <label class="form-check-label" for="active">
+                        Áp dụng hệ số này
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a
+                      th:href="@{/class-coefficients/list}"
+                      class="btn btn-secondary me-md-2"
+                      >Hủy</a
+                    >
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

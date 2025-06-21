@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::title}, ~{::main})}"
+>
+  <head>
+    <title>Thống kê Giáo viên</title>
+  </head>
+  <body>
+    <main>
+      <div class="container my-4">
+        <h2 class="mb-4">Thống kê Giáo viên</h2>
+        <!-- Debug info -->
+        <div class="alert alert-info">
+          <h5>Dữ liệu chi tiết:</h5>
+          <div>
+            <strong>Phân bố giáo viên theo bộ môn:</strong>
+            <ul>
+              <li
+                th:each="dept : ${departmentStats}"
+                th:text="${dept.key} + ': ' + ${dept.value} + ' giáo viên'"
+              ></li>
+            </ul>
+          </div>
+          <div>
+            <strong>Phân bố giáo viên theo bằng cấp:</strong>
+            <ul>
+              <li
+                th:each="degree : ${degreeStats}"
+                th:text="${degree.key} + ': ' + ${degree.value} + ' giáo viên'"
+              ></li>
+            </ul>
+          </div>
+          <div>
+            <strong>Số giờ giảng dạy theo bộ môn:</strong>
+            <ul>
+              <li
+                th:each="hours : ${teachingHoursByDepartment}"
+                th:text="${hours.key} + ': ' + ${hours.value} + ' giờ'"
+              ></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Stats cards -->
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="stats-card">
+              <div class="stats-number" th:text="${totalTeachers}">0</div>
+              <div class="stats-title">Tổng số giáo viên</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stats-card">
+              <div class="stats-number" th:text="${totalDepartments}">0</div>
+              <div class="stats-title">Số bộ môn</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stats-card">
+              <div class="stats-number" th:text="${totalTeachingHours}">0</div>
+              <div class="stats-title">Tổng số giờ giảng dạy</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Department Teacher Distribution Chart -->
+        <div class="chart-container">
+          <h4 class="mb-3">Phân bố giáo viên theo bộ môn</h4>
+          <canvas id="departmentTeacherChart"></canvas>
+        </div>
+
+        <!-- Degree Distribution Chart -->
+        <div class="chart-container">
+          <h4 class="mb-3">Phân bố giáo viên theo bằng cấp</h4>
+          <canvas id="degreeDistributionChart"></canvas>
+        </div>
+
+        <!-- Teaching Hours Chart -->
+        <div class="chart-container">
+          <h4 class="mb-3">Số giờ giảng dạy theo bộ môn</h4>
+          <canvas id="teachingHoursChart"></canvas>
+        </div>
+      </div>
+
+      <style>
+        .stats-card {
+          background-color: #fff;
+          border-radius: 8px;
+          padding: 20px;
+          margin-bottom: 20px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-number {
+          font-size: 24px;
+          font-weight: bold;
+          color: #007bff;
+        }
+
+        .stats-title {
+          font-size: 16px;
+          color: #6c757d;
+        }
+
+        .chart-container {
+          margin-top: 20px;
+          padding: 20px;
+          background-color: #fff;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+      </style>
+
+      <!-- Chart.js initialization scripts -->
+      <script type="text/javascript" th:inline="javascript">
+        // Dữ liệu thống kê theo khoa
+        const departmentData = /*[[${departmentStats}]]*/ {};
+        const departmentLabels = Object.keys(departmentData);
+        const departmentValues = Object.values(departmentData);
+
+        // Dữ liệu thống kê theo bằng cấp
+        const degreeData = /*[[${degreeStats}]]*/ {};
+        const degreeLabels = Object.keys(degreeData);
+        const degreeValues = Object.values(degreeData);
+
+        // Dữ liệu số giờ giảng dạy theo bộ môn
+        const teachingHoursData = /*[[${teachingHoursByDepartment}]]*/ {};
+        const teachingHoursDepartments = Object.keys(teachingHoursData);
+        const teachingHoursValues = Object.values(teachingHoursData);
+
+        // Vẽ biểu đồ thống kê theo khoa
+        new Chart(document.getElementById("departmentTeacherChart"), {
+          type: "pie",
+          data: {
+            labels: departmentLabels,
+            datasets: [
+              {
+                data: departmentValues,
+                backgroundColor: [
+                  "#FF6384",
+                  "#36A2EB",
+                  "#FFCE56",
+                  "#4BC0C0",
+                  "#9966FF",
+                ],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: "top",
+              },
+              title: {
+                display: true,
+                text: "Phân bố giáo viên theo khoa",
+              },
+            },
+          },
+        });
+
+        // Vẽ biểu đồ thống kê theo bằng cấp
+        new Chart(document.getElementById("degreeDistributionChart"), {
+          type: "pie",
+          data: {
+            labels: degreeLabels,
+            datasets: [
+              {
+                data: degreeValues,
+                backgroundColor: [
+                  "#FF6384",
+                  "#36A2EB",
+                  "#FFCE56",
+                  "#4BC0C0",
+                  "#9966FF",
+                ],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: "top",
+              },
+              title: {
+                display: true,
+                text: "Phân bố giáo viên theo bằng cấp",
+              },
+            },
+          },
+        });
+
+        // Vẽ biểu đồ thống kê số giờ giảng dạy theo bộ môn
+        new Chart(document.getElementById("teachingHoursChart"), {
+          type: "bar",
+          data: {
+            labels: teachingHoursDepartments,
+            datasets: [
+              {
+                label: "Số giờ giảng dạy",
+                data: teachingHoursValues,
+                backgroundColor: "#007bff",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: "top",
+              },
+              title: {
+                display: true,
+                text: "Số giờ giảng dạy theo bộ môn",
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      </script>
+    </main>
+  </body>
+</html>

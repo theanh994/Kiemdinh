@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::title}, ~{::main})}"
+>
+  <head>
+    <title>Danh sách Lớp học phần</title>
+  </head>
+  <body>
+    <main>
+      <div class="container">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title mb-4">Danh sách Lớp học phần</h2>
+
+            <div
+              th:if="${message}"
+              class="alert alert-success alert-dismissible fade show"
+            >
+              <span th:text="${message}"></span>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+              ></button>
+            </div>
+
+            <div class="mb-3">
+              <a th:href="@{/courseclass/add}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Thêm mới
+              </a>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-striped table-hover">
+                <thead class="table-primary">
+                  <tr>
+                    <th>Mã lớp</th>
+                    <th>Tên lớp</th>
+                    <th>Học phần</th>
+                    <th>Kỳ học</th>
+                    <th>Số sinh viên tối đa</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:each="courseClass : ${courseClasses}">
+                    <td th:text="${courseClass.classCode}"></td>
+                    <td th:text="${courseClass.className}"></td>
+                    <td>
+                      <span th:text="${courseClass.course.name}"></span>
+                      <small
+                        class="text-muted"
+                        th:text="'(' + ${courseClass.course.courseCode} + ')'"
+                      ></small>
+                    </td>
+                    <td
+                      th:text="${courseClass.semester.name + ' ' + courseClass.semester.academicYear}"
+                    ></td>
+                    <td th:text="${courseClass.maxStudents}"></td>
+                    <td>
+                      <div class="btn-group" role="group">
+                        <a
+                          th:href="@{/courseclass/edit/{id}(id=${courseClass.id})}"
+                          class="btn btn-sm btn-outline-primary me-1"
+                        >
+                          <i class="bi bi-pencil"></i>
+                        </a>
+                        <a
+                          th:href="@{/courseclass/delete/{id}(id=${courseClass.id})}"
+                          class="btn btn-sm btn-outline-danger"
+                          onclick="return confirm('Bạn có chắc chắn muốn xóa lớp học phần này?')"
+                        >
+                          <i class="bi bi-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr th:if="${#lists.isEmpty(courseClasses)}">
+                    <td colspan="6" class="text-center">
+                      Không có lớp học phần nào.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

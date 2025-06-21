@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::title}, ~{::main})}"
+>
+  <head>
+    <title
+      th:text="${courseClass.id == null ? 'Thêm lớp học phần' : 'Cập nhật lớp học phần'}"
+    >
+      Thêm lớp học phần
+    </title>
+  </head>
+  <body>
+    <main>
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <div class="card">
+              <div class="card-header">
+                <h3
+                  class="card-title mb-0"
+                  th:text="${courseClass.id == null ? 'Thêm lớp học phần' : 'Cập nhật lớp học phần'}"
+                ></h3>
+              </div>
+              <div class="card-body">
+                <form
+                  th:action="@{/courseclass/save}"
+                  th:object="${courseClass}"
+                  method="post"
+                >
+                  <input type="hidden" th:field="*{id}" />
+
+                  <div class="mb-3">
+                    <label for="semester" class="form-label">
+                      Kỳ học <span class="text-danger">*</span>
+                    </label>
+                    <select
+                      class="form-select"
+                      id="semester"
+                      th:field="*{semesterId}"
+                      required
+                    >
+                      <option value="">-- Chọn kỳ học --</option>
+                      <option
+                        th:each="sem : ${semesters}"
+                        th:value="${sem.id}"
+                        th:text="${sem.name + ' ' + sem.academicYear}"
+                      ></option>
+                    </select>
+                    <div
+                      class="text-danger"
+                      th:if="${#fields.hasErrors('semester')}"
+                      th:errors="*{semester}"
+                    ></div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="course" class="form-label">
+                      Học phần <span class="text-danger">*</span>
+                    </label>
+                    <select
+                      class="form-select"
+                      id="course"
+                      th:field="*{courseId}"
+                      required
+                    >
+                      <option value="">-- Chọn học phần --</option>
+                      <option
+                        th:each="c : ${courses}"
+                        th:value="${c.id}"
+                        th:text="${c.name + ' (' + c.courseCode + ')'}"
+                      ></option>
+                    </select>
+                    <div
+                      class="text-danger"
+                      th:if="${#fields.hasErrors('course')}"
+                      th:errors="*{course}"
+                    ></div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="numberOfClasses" class="form-label">
+                      Số lớp cần tạo <span class="text-danger">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="numberOfClasses"
+                      name="numberOfClasses"
+                      required
+                      min="1"
+                      value="1"
+                    />
+                    <div class="form-text">
+                      Mã lớp và tên lớp sẽ được tự động tạo theo định dạng:
+                      <br />- Mã lớp: ML[kỳ][năm][STT] (Ví dụ: ML120231001)
+                      <br />- Tên lớp: TL[kỳ][năm][STT] (Ví dụ: TL120231001)
+                    </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="maxStudents" class="form-label">
+                      Số sinh viên tối đa mỗi lớp
+                      <span class="text-danger">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="maxStudents"
+                      th:field="*{maxStudents}"
+                      required
+                      min="1"
+                      placeholder="Nhập số sinh viên tối đa"
+                    />
+                  </div>
+
+                  <div class="text-end">
+                    <a
+                      th:href="@{/courseclass/list}"
+                      class="btn btn-secondary me-2"
+                    >
+                      <i class="bi bi-x-circle me-2"></i>Hủy
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                      <i class="bi bi-check-circle me-2"></i>Lưu
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

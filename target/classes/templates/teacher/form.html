@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::title}, ~{::main})}"
+>
+  <head>
+    <title
+      th:text="${teacher.id != null ? 'Cập nhật Giáo viên' : 'Thêm mới Giáo viên'}"
+    >
+      Thêm mới Giáo viên
+    </title>
+  </head>
+  <body>
+    <main>
+      <div class="container my-4">
+        <div class="card">
+          <div class="card-body">
+            <h2
+              class="card-title mb-4"
+              th:text="${teacher.id != null ? 'Cập nhật Giáo viên' : 'Thêm mới Giáo viên'}"
+            >
+              Thêm mới Giáo viên
+            </h2>
+
+            <div
+              th:if="${message}"
+              class="alert"
+              th:classappend="${messageType == 'success'} ? 'alert-success' : 'alert-danger'"
+            >
+              <span th:text="${message}"></span>
+            </div>
+
+            <form
+              th:action="@{${teacher.id != null ? '/teachers/update/' + teacher.id : '/teachers/save'}}"
+              th:object="${teacher}"
+              method="post"
+            >
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="teacherCode" class="form-label"
+                      >Mã số giáo viên</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="teacherCode"
+                      th:field="*{teacherCode}"
+                      th:placeholder="'Để trống để tự động tạo mã'"
+                      th:readonly="${teacher.id != null}"
+                    />
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="fullName" class="form-label"
+                      >Họ tên <span class="text-danger">*</span></label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="fullName"
+                      th:field="*{fullName}"
+                      required
+                    />
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="birthDate" class="form-label"
+                      >Ngày sinh <span class="text-danger">*</span></label
+                    >
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="birthDate"
+                      th:field="*{birthDate}"
+                      required
+                    />
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="phone" class="form-label"
+                      >Điện thoại <span class="text-danger">*</span></label
+                    >
+                    <input
+                      type="tel"
+                      class="form-control"
+                      id="phone"
+                      th:field="*{phone}"
+                      pattern="[0-9]{10}"
+                      title="Số điện thoại phải có 10 chữ số"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="email" class="form-label"
+                      >Email <span class="text-danger">*</span></label
+                    >
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="email"
+                      th:field="*{email}"
+                      required
+                    />
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="department" class="form-label"
+                      >Khoa <span class="text-danger">*</span></label
+                    >
+                    <select
+                      class="form-select"
+                      id="department"
+                      th:field="*{departmentId}"
+                      required
+                    >
+                      <option value="">-- Chọn Khoa --</option>
+                      <option
+                        th:each="dept : ${departments}"
+                        th:value="${dept.id}"
+                        th:text="${dept.fullName}"
+                      ></option>
+                    </select>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="degree" class="form-label"
+                      >Bằng cấp <span class="text-danger">*</span></label
+                    >
+                    <select
+                      class="form-select"
+                      id="degree"
+                      th:field="*{degreeId}"
+                      required
+                    >
+                      <option value="">-- Chọn Bằng cấp --</option>
+                      <option
+                        th:each="deg : ${degrees}"
+                        th:value="${deg.id}"
+                        th:text="${deg.fullName}"
+                      ></option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-end gap-2">
+                <a th:href="@{/teachers}" class="btn btn-secondary">Hủy</a>
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-save"></i>
+                  <span
+                    th:text="${teacher.id != null ? 'Cập nhật' : 'Lưu'}"
+                  ></span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

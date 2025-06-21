@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::title}, ~{::main})}"
+>
+  <head>
+    <title>Chi tiết lớp học phần</title>
+  </head>
+  <body>
+    <main>
+      <div class="container">
+        <!-- Course Details -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <h2 class="card-title" th:text="${course.name}">Tên học phần</h2>
+              <a
+                th:href="@{/course/department}"
+                class="btn btn-outline-secondary"
+              >
+                <i class="bi bi-arrow-left me-2"></i>Quay lại
+              </a>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-3">
+                <p class="mb-1"><strong>Mã học phần:</strong></p>
+                <p th:text="${course.courseCode}">MHP001</p>
+              </div>
+              <div class="col-md-3">
+                <p class="mb-1"><strong>Số tín chỉ:</strong></p>
+                <p th:text="${course.credits}">3</p>
+              </div>
+              <div class="col-md-3">
+                <p class="mb-1"><strong>Khoa quản lý:</strong></p>
+                <p th:text="${course.department?.name}">Tên khoa</p>
+              </div>
+              <div class="col-md-3">
+                <p class="mb-1"><strong>Tổng số lớp:</strong></p>
+                <p th:text="${#lists.size(classes)}">0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Class List -->
+        <div class="card">
+          <div
+            class="card-header d-flex justify-content-between align-items-center"
+          >
+            <h4 class="mb-0">Danh sách lớp học phần</h4>
+            <a
+              th:href="@{/courseclass/add(courseId=${course.id})}"
+              class="btn btn-primary"
+            >
+              <i class="bi bi-plus-circle me-2"></i>Thêm lớp
+            </a>
+          </div>
+          <div class="card-body">
+            <!-- Semester Filter -->
+            <div class="row mb-4">
+              <div class="col-md-4">
+                <form
+                  th:action="@{/course/classes/{id}(id=${course.id})}"
+                  method="get"
+                >
+                  <label for="semesterId" class="form-label">Kỳ học</label>
+                  <select
+                    class="form-select"
+                    id="semesterId"
+                    name="semesterId"
+                    onchange="this.form.submit()"
+                  >
+                    <option value="">Tất cả kỳ học</option>
+                    <option
+                      th:each="sem : ${semesters}"
+                      th:value="${sem.id}"
+                      th:text="${sem.name + ' ' + sem.academicYear}"
+                      th:selected="${selectedSemesterId == sem.id}"
+                    ></option>
+                  </select>
+                </form>
+              </div>
+            </div>
+
+            <!-- Classes Table -->
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Mã lớp</th>
+                    <th>Tên lớp</th>
+                    <th>Kỳ học</th>
+                    <th>Sĩ số tối đa</th>
+                    <th>Giảng viên</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:if="${#lists.isEmpty(classes)}">
+                    <td colspan="6" class="text-center">
+                      Chưa có lớp học phần nào được mở
+                    </td>
+                  </tr>
+                  <tr th:each="class : ${classes}">
+                    <td th:text="${class.classCode}"></td>
+                    <td th:text="${class.className}"></td>
+                    <td
+                      th:text="${class.semester.name + ' ' + class.semester.academicYear}"
+                    ></td>
+                    <td th:text="${class.maxStudents}"></td>
+                    <td>
+                      <span
+                        th:if="${class.teacher}"
+                        th:text="${class.teacher.fullName}"
+                      ></span>
+                      <span th:unless="${class.teacher}" class="text-muted"
+                        >Chưa phân công</span
+                      >
+                    </td>
+                    <td>
+                      <div class="btn-group btn-group-sm">
+                        <a
+                          th:unless="${class.teacher}"
+                          th:href="@{/teaching/assign(classId=${class.id})}"
+                          class="btn btn-outline-primary"
+                          title="Phân công giảng viên"
+                        >
+                          <i class="bi bi-person-plus"></i>
+                        </a>
+                        <a
+                          th:href="@{/courseclass/edit/{id}(id=${class.id})}"
+                          class="btn btn-outline-secondary"
+                          title="Sửa"
+                        >
+                          <i class="bi bi-pencil"></i>
+                        </a>
+                        <a
+                          th:href="@{/courseclass/delete/{id}(id=${class.id})}"
+                          class="btn btn-outline-danger"
+                          title="Xóa"
+                          onclick="return confirm('Bạn có chắc chắn muốn xóa lớp học phần này?')"
+                        >
+                          <i class="bi bi-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
